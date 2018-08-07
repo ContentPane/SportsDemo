@@ -94,8 +94,11 @@ public class MainActivity extends AppCompatActivity {
         // 开启定位图层
         mBaiduMap.setMyLocationEnabled(true);
 
+        // 获取经纬度数据库
         drawLineFormDB = new DrawLineDaoImpl(this);
+        // drawLine历史路线功能
         drawOnMap = new DrawOnMap(this);
+
         mStartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
