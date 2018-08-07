@@ -252,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
          *  points(java.util.List<LatLng> points):设置折线坐标点列表
          * */
 
+
         OverlayOptions ooPolyline = new PolylineOptions().width(10)
                 .color(0xFFFF0000).customTexture(bitmap).points(latiLongsList);
 //        arrowMarkerList.add(ooPolyline);
