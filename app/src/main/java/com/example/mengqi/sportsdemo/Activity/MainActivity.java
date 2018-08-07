@@ -31,6 +31,7 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.example.mengqi.sportsdemo.DrawUtils.DrawOnMap;
 import com.example.mengqi.sportsdemo.Model.LatiLong;
 import com.example.mengqi.sportsdemo.Dao.DrawLineDaoImpl;
 import com.example.mengqi.sportsdemo.R;
@@ -40,14 +41,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "SportsDemo";
-    private static final int SPAN_SECOND = 1000000;
+    private static final int SPAN_SECOND = 5000;
+    private static final int LINE_WIDTH = 20;
 
 
     private MapView mapView;
     private BaiduMap mBaiduMap;
     private Button mDlBtn;
     private Button mCdbBtn;
-
+    private Button mStartBtn;
+    private Button mStopBtn;
 
     // 权限初始化
     private final int SDK_PERMISSION_REQUEST = 127;
@@ -65,13 +68,15 @@ public class MainActivity extends AppCompatActivity {
 
     // DrawLine数据库初始化
     private DrawLineDaoImpl drawLineFormDB;
+    private DrawOnMap drawOnMap;
     // 存储SQLite中经纬度的数组
     List<LatLng> latiLongsList = new ArrayList<>();
 
-    //Maker
-    View view = null;
-    BitmapDescriptor bitmap = null;
-
+    //Arrow
+    BitmapDescriptor arrowBitmap = null;
+    //End,StartPoint
+    BitmapDescriptor endBitmap = null;
+    BitmapDescriptor startBitmap = null;
 
 
     @Override
@@ -80,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
-        view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.maker, null);
-        bitmap = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
-
+        arrowBitmap = BitmapDescriptorFactory.fromResource(R.drawable.arrow);
+        startBitmap = BitmapDescriptorFactory.fromResource(R.drawable.start);
+        endBitmap = BitmapDescriptorFactory.fromResource(R.drawable.start);
 
 
         //获取权限
@@ -92,22 +97,51 @@ public class MainActivity extends AppCompatActivity {
         mapView = (MapView) findViewById(R.id.bmpView);
         mDlBtn = (Button) findViewById(R.id.btn_drawline);
         mCdbBtn = (Button) findViewById(R.id.btn_createdb);
+        mStartBtn = (Button) findViewById(R.id.btn_start);
+        mStopBtn = (Button) findViewById(R.id.btn_stop);
+
         mBaiduMap = mapView.getMap();
+
+
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         // 开启定位图层
         mBaiduMap.setMyLocationEnabled(true);
         //使用定位
-        mLocationClient = new LocationClient(getApplicationContext());
-
-        mLocationClient.registerLocationListener(locListener);//注册位置监听
-        //地图参数初始化
-        initLocation();
-        //初始化地图滑动监听
-        initListerner();
-        //开启定位
-        mLocationClient.start();
+//        mLocationClient = new LocationClient(getApplicationContext());
+//
+//        mLocationClient.registerLocationListener(locListener);//注册位置监听
+//        //地图参数初始化
+//        initLocation();
+//        //初始化地图滑动监听
+//        initListerner();
+//        //开启定位
+//        mLocationClient.start();
 
         drawLineFormDB = new DrawLineDaoImpl(this);
+        drawOnMap = new DrawOnMap(this);
+        mStartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLocationClient = new LocationClient(getApplicationContext());
+
+                mLocationClient.registerLocationListener(locListener);//注册位置监听
+                //地图参数初始化
+                initLocation();
+                //初始化地图滑动监听
+                initListerner();
+                //开启定位
+                mLocationClient.start();
+            }
+        });
+
+        mStopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLocationClient.stop();
+            }
+        });
+
+
         mDlBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,20 +150,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    private Bitmap getViewBitmap(View addViewContent) {
-
-        addViewContent.setDrawingCacheEnabled(true);
-
-        addViewContent.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        addViewContent.layout(0, 0, addViewContent.getMeasuredWidth(), addViewContent.getMeasuredHeight());
-
-        addViewContent.buildDrawingCache();
-        Bitmap cacheBitmap = addViewContent.getDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(cacheBitmap);
-
-        return bitmap;
     }
 
     //初始换百度地图SDK各个参数
@@ -227,9 +247,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void queryLatlngFromDB() {
-        latiLongsList = drawLineFormDB.queryLatlng();
-    }
 
     // 更新地图
     private void updateMap(BaiduMap map, BDLocation bdLocation, float zoomLevel) {
@@ -240,33 +257,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void drawLine() {
-        //查询经纬度的点
-        queryLatlngFromDB();
-//        List<OverlayOptions> arrowMarkerList = new ArrayList<>();
-        /**
-         *OverlayOptions:地图覆盖物选型基类
-         *
-         *PolylineOptions:创建折线覆盖物选项类
-         * 	width(int width):设置折线线宽， 默认为 5， 单位：像素
-         *  color(int color):设置折线颜色
-         *  points(java.util.List<LatLng> points):设置折线坐标点列表
-         * */
-
-
-        OverlayOptions ooPolyline = new PolylineOptions().width(10)
-                .color(0xFFFF0000).customTexture(bitmap).points(latiLongsList);
-//        arrowMarkerList.add(ooPolyline);
-//        for (LatLng markerLatlng : latiLongsList) {
-//            OverlayOptions arrowMarker = new MarkerOptions().icon(bitmap).position(markerLatlng);
-//            arrowMarkerList.add(arrowMarker);
-//        }
-
-        /**
-         *addOverlay(OverlayOptions options):
-         *			向地图添加一个 Overlay
-         * */
-        mBaiduMap.addOverlay(ooPolyline);
-        // 测试
+        // 画出导航线路
+        List<OverlayOptions> roadOverlay = drawOnMap.drawRoad(arrowBitmap, LINE_WIDTH);
+        // 画出起点和终点
+        List<OverlayOptions> startAndEndList = drawOnMap.drawStartAndEnd(startBitmap, endBitmap);
+        mBaiduMap.addOverlays(roadOverlay);
+        mBaiduMap.addOverlays(startAndEndList);
 
         //添加弧线
         /**
@@ -304,16 +300,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //获取当前经纬度
-    private void updateMapState(MapStatus status) {
-        LatLng mCurrentLatLng = status.target;
-        /*获取经纬度*/
-        double lat = mCurrentLatLng.latitude;
-        double lng = mCurrentLatLng.longitude;
-        Log.d(TAG, "updateMapState: latlong" + lat + " " + lng);
-    }
-
-
+    //获取权限
     @TargetApi(23)
     private void getPersimmions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

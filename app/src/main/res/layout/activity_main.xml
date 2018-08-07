@@ -22,17 +22,33 @@
         android:layout_gravity="bottom">
         <Button
             android:id="@+id/btn_drawline"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:text="Draw Line"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btn_createdb"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:text="Create Database"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="Start Location"
+            android:id="@+id/btn_start"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="Stop Location"
+            android:id="@+id/btn_stop"
+            />
     </LinearLayout>
 
 

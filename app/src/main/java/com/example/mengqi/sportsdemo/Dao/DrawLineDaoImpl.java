@@ -73,6 +73,39 @@ public class DrawLineDaoImpl implements DrawLineDao {
         return latiLongsList;
     }
 
+    //查询起点
+    public LatLng queryStartPointLatlng() {
+        double latitude = 0;
+        double longitude = 0;
+        LatLng latLng = new LatLng(latitude , longitude);
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from Latlng LIMIT 1",null);
+        while (cursor.moveToNext()) {
+            latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+            latLng = new LatLng(latitude , longitude);
+        }
+        cursor.close();
+        return latLng;
+    }
+
+    //查询终点
+    public LatLng queryEndPointLatlng() {
+        double latitude = 0;
+        double longitude = 0;
+        LatLng latLng = new LatLng(latitude, longitude);
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from Latlng order by id desc limit 1",null);
+        while (cursor.moveToNext()) {
+            latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
+            longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
+            latLng = new LatLng(latitude, longitude);
+        }
+
+        cursor.close();
+        return latLng;
+    }
+
     //查询和数据库的个数
     public int getCount() {
         int count = 0;
