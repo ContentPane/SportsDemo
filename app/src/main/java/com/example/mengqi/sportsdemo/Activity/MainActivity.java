@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         mBaiduMap.addOverlays(startAndEndList);
 
         //添加弧线
-        /**
+        /*
          *ArcOptions:弧线构造选项，继承自 #OverlayOptions
          * 	color(int color):设置弧线的颜色
          *  width(int width):设置弧线的线宽
