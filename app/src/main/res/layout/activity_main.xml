@@ -28,13 +28,6 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btn_createdb"
-            android:textSize="12sp"
-            android:text="Create Database"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"

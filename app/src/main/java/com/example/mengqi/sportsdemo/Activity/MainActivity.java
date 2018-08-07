@@ -3,13 +3,11 @@ package com.example.mengqi.sportsdemo.Activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -25,11 +23,8 @@ import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.PolylineOptions;
-import com.baidu.mapapi.map.TextOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.example.mengqi.sportsdemo.DrawUtils.DrawOnMap;
 import com.example.mengqi.sportsdemo.Model.LatiLong;
@@ -47,10 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     private MapView mapView;
     private BaiduMap mBaiduMap;
-    private Button mDlBtn;
-    private Button mCdbBtn;
-    private Button mStartBtn;
-    private Button mStopBtn;
 
     // 权限初始化
     private final int SDK_PERMISSION_REQUEST = 127;
@@ -69,11 +60,9 @@ public class MainActivity extends AppCompatActivity {
     // DrawLine数据库初始化
     private DrawLineDaoImpl drawLineFormDB;
     private DrawOnMap drawOnMap;
-    // 存储SQLite中经纬度的数组
-    List<LatLng> latiLongsList = new ArrayList<>();
-
     //Arrow
     BitmapDescriptor arrowBitmap = null;
+
     //End,StartPoint
     BitmapDescriptor endBitmap = null;
     BitmapDescriptor startBitmap = null;
@@ -94,42 +83,31 @@ public class MainActivity extends AppCompatActivity {
         getPersimmions();
 
         //加载地图
-        mapView = (MapView) findViewById(R.id.bmpView);
-        mDlBtn = (Button) findViewById(R.id.btn_drawline);
-        mCdbBtn = (Button) findViewById(R.id.btn_createdb);
-        mStartBtn = (Button) findViewById(R.id.btn_start);
-        mStopBtn = (Button) findViewById(R.id.btn_stop);
+        mapView = findViewById(R.id.bmpView);
+        Button mDlBtn = findViewById(R.id.btn_drawline);
+        Button mStartBtn = findViewById(R.id.btn_start);
+        Button mStopBtn = findViewById(R.id.btn_stop);
 
         mBaiduMap = mapView.getMap();
-
 
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         // 开启定位图层
         mBaiduMap.setMyLocationEnabled(true);
-        //使用定位
-//        mLocationClient = new LocationClient(getApplicationContext());
-//
-//        mLocationClient.registerLocationListener(locListener);//注册位置监听
-//        //地图参数初始化
-//        initLocation();
-//        //初始化地图滑动监听
-//        initListerner();
-//        //开启定位
-//        mLocationClient.start();
 
         drawLineFormDB = new DrawLineDaoImpl(this);
         drawOnMap = new DrawOnMap(this);
         mStartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // 使用定位
                 mLocationClient = new LocationClient(getApplicationContext());
-
-                mLocationClient.registerLocationListener(locListener);//注册位置监听
-                //地图参数初始化
+                // 注册位置监听
+                mLocationClient.registerLocationListener(locListener);
+                // 地图参数初始化
                 initLocation();
-                //初始化地图滑动监听
+                // 初始化地图滑动监听
                 initListerner();
-                //开启定位
+                // 开启定位
                 mLocationClient.start();
             }
         });
@@ -212,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
      * @param bdLocation
      * @param isShowLoc
      */
+
     public void setPosition2Center(BaiduMap map, BDLocation bdLocation, Boolean isShowLoc) {
         MyLocationData locData = new MyLocationData.Builder()
                 .accuracy(bdLocation.getRadius())
@@ -360,7 +339,6 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(23)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        // TODO Auto-generated method stub
         switch (requestCode) {
             case SDK_PERMISSION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
