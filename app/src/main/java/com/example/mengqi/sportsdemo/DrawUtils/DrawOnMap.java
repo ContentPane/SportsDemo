@@ -48,7 +48,7 @@ public class DrawOnMap {
                 .zIndex(2)
                 .color(0xFFFF0000)
                 .dottedLine(true)
-                .width(10)
+                .width(14)
                 .points(latiLongsList);
 
         OverlayOptions ooPolyline = new PolylineOptions()
